@@ -1,0 +1,11 @@
+%% -*- erlang -*-
+{application, movi,
+ [
+  {description, "movie database"},
+  {vsn, git},
+  {applications, [
+                  kernel,
+                  stdlib
+                 ]},
+  {mod, { hex_epx_app, []}}
+ ]}.
