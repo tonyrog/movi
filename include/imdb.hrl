@@ -1,6 +1,11 @@
 -ifndef(__IMDB_HRL__).
 -define(__IMDB_HRL__, true).
 
+%%
+%% attribues in exclude include: 
+%%   videon_game,video,tv, {part,N}
+%%   tv_series, {episode,E}, {season,S}, {episode_name,Name}
+%%
 
 -record(item,
 	{

@@ -2,16 +2,16 @@
 %%% @copyright (C) 2016, Tony Rogvall
 %%% @doc
 %%%    Import imdb files to internal term format
+%%% ftp://ftp.sunet.se/pub/tv+movies/imdb/ratings.list.gz
 %%% @end
 %%% Created : 11 Feb 2016 by Tony Rogvall <tony@rogvall.se>
 
 -module(imdb_ratings).
 
--export([load/0]).
+-export([load/0, load/2]).
 -export([import/0, import/1]).
 
 -include("../include/imdb.hrl").
-
 
 -define(is_digit(C),
 	(((C) >= $0) andalso ((C) =< $9))).
@@ -23,14 +23,14 @@
 
 load() ->
     Ets = ets:new(imdb, []),
-    load_ets("ratings.dat", Ets),
+    ok = load("ratings.dat", Ets),
     Ets.
 
 import() ->
     import("ratings.list.gz").
 
 import(File) ->
-    FileName = filename:join(code:priv_dir(imdb), File),
+    FileName = filename:join(code:priv_dir(movi), File),
     case file:open(FileName, [raw, read, binary, compressed,
 			      {read_ahead, 1024*64}]) of
 	{ok,Fd} ->
@@ -52,17 +52,17 @@ import(File) ->
 
 %% save ets table in <size><term> format
 save_ets(Name, Ets) ->
-    FileName = filename:join(code:priv_dir(imdb), Name),
+    FileName = filename:join(code:priv_dir(movi), Name),
     {ok,Fd} = file:open(FileName, [raw,write,binary]),
     ets:foldl(
-      fun(Term, Acc) ->
+      fun(Term, _Acc) ->
 	      Bin = term_to_binary(Term),
 	      file:write(Fd, [<<(byte_size(Bin)):32>>,Bin])
       end, [], Ets),
     file:close(Fd).
 
-load_ets(Name, Ets) ->
-    FileName = filename:join(code:priv_dir(imdb), Name),
+load(Name, Ets) ->
+    FileName = filename:join(code:priv_dir(movi), Name),
     {ok,Fd} = file:open(FileName, [raw,read,binary,{read_ahead, 1024*64}]),
     load_ets_loop(Fd, Ets),
     file:close(Fd).

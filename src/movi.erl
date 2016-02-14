@@ -1,70 +1,67 @@
-%%
-%% ftp://ftp.sunet.se/pub/tv+movies/imdb/ratings.list.gz
-%%
--module(imdb).
+%%% @author Tony Rogvall <tony@rogvall.se>
+%%% @copyright (C) 2016, Tony Rogvall
+%%% @doc
+%%%    Wrapper to start movi
+%%% @end
+%%% Created : 12 Feb 2016 by Tony Rogvall <tony@rogvall.se>
+
+-module(movi).
+-compile(export_all).
 
 -export([good_movies/0, good_new_movies/0, good_classic_movies/0]).
 
--compile(export_all).
+-export([start/0]).
+
 -include("../include/imdb.hrl").
 
-%%
-%% attribues in exclude include: 
-%%   videon_game,video,tv, {part,N}
-%%   tv_series, {episode,E}, {season,S}, {episode_name,Name}
-%%
-
-load_ratings() ->
-    search_db_ratings(
-		 #filter { min_votes = 10000,
-			   min_rating = 8.5
-			 }).
+start() ->
+    application:start(movi).
 
 best_movies() ->
-     search_db_ratings(
-		       #filter { min_votes = 10000,
-				 min_rating = 8.0,
-				 exclude = [tv,tv_series,video,video_game]
-			       }).
+    search_ratings(
+       #filter { min_votes = 10000,
+		 min_rating = 8.0,
+		 exclude = [tv,tv_series,video,video_game]
+	       }).
 
 good_movies() ->
-     search_db_ratings(
-		       #filter { min_votes = 10000,
-				 min_rating = 7.0,
-				 exclude = [tv,tv_series,video,video_game]
-			       }).
+    search_ratings(
+      #filter { min_votes = 10000,
+		min_rating = 7.0,
+		exclude = [tv,tv_series,video,video_game]
+	      }).
 
 best_new_movies() ->
-    search_db_ratings(
-		      #filter { min_votes = 10000,
-				min_rating = 8.0,
-				exclude = [tv,tv_series,video,video_game],
-				min_year = 2013
-			      }).
-good_new_movies() ->
-    search_db_ratings(
-		      #filter { min_votes = 10000,
-				min_rating = 7.0,
-				exclude = [tv,tv_series,video,video_game],
-				min_year = 2013
-			      }).
+    search_ratings(
+      #filter { min_votes = 10000,
+		min_rating = 8.0,
+		exclude = [tv,tv_series,video,video_game],
+		min_year = 2013
+	      }).
 
+good_new_movies() ->
+    search_ratings(
+      #filter { min_votes = 10000,
+		min_rating = 7.0,
+		exclude = [tv,tv_series,video,video_game],
+		min_year = 2013
+	      }).
 
 best_classic_movies() ->
-    search_db_ratings(
-		      #filter { min_votes = 10000,
-				min_rating = 7.0,
-				exclude = [tv,tv_series,video,video_game],
-				max_year = 1980
-			     }).
+    search_ratings(
+      #filter { min_votes = 10000,
+		min_rating = 7.0,
+		exclude = [tv,tv_series,video,video_game],
+		max_year = 1980
+	      }).
 
 good_classic_movies() ->
-    search_db_ratings(
-		      #filter { min_votes = 10000,
-				min_rating = 7.0,
-				exclude = [tv,tv_series,video,video_game],
-				max_year = 1980
-			     }).
+    search_ratings(
+      #filter { min_votes = 10000,
+		min_rating = 7.0,
+		exclude = [tv,tv_series,video,video_game],
+		max_year = 1980
+	      }).
 
 do_filter(Item, Filter) ->
     Year = proplists:get_value(year,Item#item.attributes),
@@ -128,10 +125,11 @@ filter_options([Opt|Opts], Filter) ->
 filter_options([], Filter) ->
     Filter.
 
-search_db_ratings(Cond) when is_list(Cond) ->
-    search_db_ratings(filter_options(Cond,#filter{}));
-search_db_ratings(Cond) when is_record(Cond, filter) ->
-    Ets = imdb_ratings:load(),
+
+search_ratings(Cond) when is_list(Cond) ->
+    search_ratings(filter_options(Cond,#filter{}));
+search_ratings(Cond) when is_record(Cond, filter) ->
+    Ets = movi_srv:get_ratings(),
     ets:foldl(
       fun({_Key,Item}, Acc) ->
 	      case do_filter(Item, Cond) of
