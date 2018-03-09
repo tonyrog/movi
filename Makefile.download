@@ -1,0 +1,27 @@
+URL = https://datasets.imdbws.com
+
+all:
+	echo "target needed"
+
+download: name akas basics crew episode principals ratings
+
+name:
+	wget -Opriv/name.basics.tsv.gz $(URL)/name.basics.tsv.gz
+
+akas:
+	wget -Opriv/title.akas.tsv.gz $(URL)/title.akas.tsv.gz
+
+basics:
+	wget -Opriv/title.basics.tsv.gz $(URL)/title.basics.tsv.gz
+
+crew:
+	wget -Opriv/title.crew.tsv.gz $(URL)/title.crew.tsv.gz
+
+episode:
+	wget -Opriv/title.episode.tsv.gz $(URL)/title.episode.tsv.gz
+
+principals:
+	wget -Opriv/title.principals.tsv.gz $(URL)/title.principals.tsv.gz
+
+ratings:
+	wget -Opriv/title.ratings.tsv.gz $(URL)/title.ratings.tsv.gz

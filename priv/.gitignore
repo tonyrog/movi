@@ -1,2 +1,5 @@
 *.gz
 *.dat
+*.dets
+*.tsv
+bdb

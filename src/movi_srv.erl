@@ -13,6 +13,7 @@
 %% API
 -export([start_link/0]).
 -export([get_ratings/0]).
+-export([get_genres/0]).
 
 %% gen_server callbacks
 -export([init/1, handle_call/3, handle_cast/2, handle_info/2,
@@ -21,7 +22,14 @@
 -define(SERVER, ?MODULE).
 
 -record(state, {
-	  ratings   %% ets table with ratings
+	  movi_reg,
+	  name_basics,
+	  title_basics,
+	  title_episode,
+	  title_crew,
+	  title_ratings,
+	  title_principals,
+	  title_akas
 	 }).
 
 %%%===================================================================
@@ -30,6 +38,9 @@
 
 get_ratings() ->
     gen_server:call(?SERVER, get_ratings).
+
+get_genres() ->
+    gen_server:call(?SERVER, get_genres).
 
 %%--------------------------------------------------------------------
 %% @doc
@@ -57,9 +68,21 @@ start_link() ->
 %% @end
 %%--------------------------------------------------------------------
 init([]) ->
-    Ratings = ets:new(ratings, []),
-    ok = imdb_ratings:load("ratings.dat", Ratings),
-    {ok, #state{ ratings = Ratings }}.
+    A = imdb:setup(name_basics),
+    B = imdb:setup(title_basics),
+    C = imdb:setup(title_episode),
+    D = imdb:setup(title_crew),
+    E = imdb:setup(title_ratings),
+    F = imdb:setup(title_principals),
+    G = imdb:setup(title_akas),
+
+    {ok, #state{ name_basics   = A,
+		 title_basics  = B,
+		 title_episode = C,
+		 title_crew    = D,
+		 title_ratings = E,
+		 title_principals = F,
+		 title_akas       = G }}.
 
 %%--------------------------------------------------------------------
 %% @private
@@ -75,8 +98,6 @@ init([]) ->
 %%                                   {stop, Reason, State}
 %% @end
 %%--------------------------------------------------------------------
-handle_call(get_ratings, _From, State) ->
-    {reply, State#state.ratings, State};
 handle_call(_Request, _From, State) ->
     {reply, {error,bad_call}, State}.
 
