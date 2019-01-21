@@ -27,6 +27,7 @@
 	 encode_field/2, encode_typed_field/2, encode_scalar/2]).
 
 -export([test_type_codec/0]).
+-compile(export_all).
 
 %% open a .rec, .pri or .sec for reading
 
@@ -43,6 +44,29 @@ open_pri(File, read) ->
 open_pri(File, write) ->
     FileName = filename:rootname(File)++".pri",
     file:open(FileName, [raw, write, binary, delayed_write]).
+
+%% using "." in filenames present an interesting problem
+rootname(Filename) ->
+    case filename:dirname(Filename) of
+	"." when hd(Filename) =/= $. ->
+	    rootname_(Filename);
+	Dir ->
+	    Base = filename:basename(Filename),
+	    filename:join(Dir, rootname_(Base))
+    end.
+
+%% maybe strip both tsv and tsv.gz?
+rootname_(Filename) ->
+    case filename:extension(Filename) of
+	".tsv" -> filename:basename(Filename, ".tsv");
+	".rec" -> filename:basename(Filename, ".rec");
+	".pri" -> filename:basename(Filename, ".pri");
+	Ext ->
+	    N = length(Ext),
+	    if N =< 4 -> filename:basename(Filename, Ext);
+	       true -> Filename
+	    end
+    end.
 
 close(Fd) ->
     file:close(Fd).
@@ -248,14 +272,15 @@ encode_typed_field(T, Value) when is_integer(T) ->
 		    [<<N:32>> | [encode_scalar(T,E) || E <- Value]]
 	    end;
 	?TSV_TYPE_ARRAY ->
-	    N = length(Value),
+	    N = tuple_size(Value),
+	    Vs = tuple_to_list(Value),
 	    case T band ?TSV_STRUCTLEN_MASK of
 		?TSV_LENGTH8 ->
-		    [<<N:8>> | [encode_scalar(T,E) || E <- Value]];
+		    [<<N:8>> | [encode_scalar(T,E) || E <- Vs]];
 		?TSV_LENGTH16 ->
-		    [<<N:16>> | [encode_scalar(T,E) || E <- Value]];
+		    [<<N:16>> | [encode_scalar(T,E) || E <- Vs]];
 		?TSV_LENGTH32 ->
-		    [<<N:32>> | [encode_scalar(T,E) || E <- Value]]
+		    [<<N:32>> | [encode_scalar(T,E) || E <- Vs]]
 	    end
     end;
 encode_typed_field(TypeTerm, Value) ->

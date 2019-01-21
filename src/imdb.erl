@@ -14,7 +14,6 @@
 -define(dbg(Fmt,As), io:format((Fmt),(As))).
 %% -define(dbg(Fmt,As), ok).
  
-
 -define(BOOLEAN, ?TSV_TYPE_BOOLEAN).
 -define(FLOAT,   ?TSV_TYPE_FLOAT32).
 -define(INT,     ?TSV_TYPE_INT64).
@@ -35,121 +34,174 @@
 -define(ARRAY(T), (?TSV_TYPE_ARRAY8 bor (T))).
 
 -define(CATEGORY_LIST,
-	?CMAP("self", #category.self),
-	?CMAP("director", #category.director),
-	?CMAP("composer", #category.composer),
-	?CMAP("writer", #category.writer),
-	?CMAP("editor", #category.editor),
-	?CMAP("actor", #category.actor),
-	?CMAP("actress", #category.actress),
-	?CMAP("producer",  #category.producer),
-	?CMAP("production_designer", #category.production_designer),
-	?CMAP("cinematographer", #category.cinematographer),
-	?CMAP("archive_footage", #category.archive_footage),
-	?CMAP("archive_sound", #category.archive_sound)
+	?CMAP("self",     ?CATEGORY_self),
+	?CMAP("director", ?CATEGORY_director),
+	?CMAP("composer", ?CATEGORY_composer),
+	?CMAP("writer",   ?CATEGORY_writer),
+	?CMAP("editor",   ?CATEGORY_editor),
+	?CMAP("actor",    ?CATEGORY_actor),
+	?CMAP("actress",  ?CATEGORY_actress),
+	?CMAP("producer",  ?CATEGORY_producer),
+	?CMAP("production_designer", ?CATEGORY_production_designer),
+	?CMAP("cinematographer",  ?CATEGORY_cinematographer),
+	?CMAP("archive_footage",  ?CATEGORY_archive_footage),
+	?CMAP("archive_sound",    ?CATEGORY_archive_sound)
 	).
 
+-define(CMAP(K,V), <<K>> => V).
+category_map(Value) -> maps:get(Value, #{ ?CATEGORY_LIST }).
+-undef(CMAP).
+
+-define(CMAP(K,V), V => <<K>>).
+category_revmap(Value) -> maps:get(Value, #{ ?CATEGORY_LIST }).
+-undef(CMAP).
+
+
 -define(JOB_LIST,
-	?JMAP("self", #job.self);
-	?JMAP("director", #job.director);
-	?JMAP("writer", #job.writer);
-	?JMAP("co-writer", #job.co_writer);
-	?JMAP("creator", #job.creator);
-	?JMAP("co-director", #job.co_director);
-	?JMAP("producer", #job.producer);
-	?JMAP("executive producer", #job.executive_producer);
-	?JMAP("co-composer", #job.co_composer);
-	?JMAP("director of photography", #job.director_of_photography);
-	?JMAP("novel", #job.novel);
-	?JMAP("story", #job.story);
-	?JMAP("original story", #job.original_story);
-	?JMAP("short story", #job.short_story);
-	?JMAP2("original story and screen play",
-	       #job.original_story, #job.original_screen_play);
-	?JMAP("poem", #job.poem);
-	?JMAP("play", #job.play);
-	?JMAP("plays", #job.plays);
-	?JMAP("tale", #job.tale);
-	?JMAP("opera", #job.opera);
-	?JMAP("titles", #job.titles);
-	?JMAP("teleplay", #job.teleplay);
-	?JMAP("teleplay by", #job.teleplay);
-	?JMAP("idea", #job.idea);
-	?JMAP("memoirs", #job.memoirs);
-	?JMAP("dialogue", #job.dialogue);
-	?JMAP("commentary", #job.commentary);
-	?JMAP("screenplay", #job.screen_play);
-	?JMAP("screen play", #job.screen_play);
-	?JMAP("screen play by", #job.screen_play);
-	?JMAP("screenplay by", #job.screen_play);
-	?JMAP("original screenplay", #job.original_screen_play);
-	?JMAP("comic strip", #job.comic_strip);
-	?JMAP("poems", #job.poems);
-	?JMAP("comedy", #job.comedy);
-	?JMAP("scenario", #job.scenario);
-	?JMAP("novella", #job.novella);
-	?JMAP("adaptation", #job.adaptation);
-	?JMAP("book", #job.book);
-	?JMAP("fable", #job.fable);
-	?JMAP("translation", #job.translation);
-	?JMAP("main characters", #job.main_characters);
-	?JMAP("based on a play by", #job.based_on_a_play_by);
-	?JMAP("based on the play by", #job.based_on_a_play_by);
-	?JMAP("based on a story by", #job.based_on_a_story_by);
+	?JMAP("self", ?JOB_self);
+	?JMAP("director", ?JOB_director);
+	?JMAP("co-director", ?JOB_co_director);
+	?JMAP("writer", ?JOB_writer);
+	?JMAP("co-writer", ?JOB_co_writer);
+	?JMAP("creator", ?JOB_creator);
+        ?JMAP("co-creator", ?JOB_co_creator);
+	?JMAP("producer", ?JOB_producer);
+	?JMAP("co-producer", ?JOB_co_producer);
+	?JMAP("co-composer", ?JOB_co_composer);
+	?JMAP("executive producer", ?JOB_executive_producer);
+	?JMAP("composer", ?JOB_composer);
+	?JMAP("co-composer", ?JOB_co_composer);
+	?JMAP("director of photography", ?JOB_director_of_photography);
+	?JMAP("novel", ?JOB_novel);
+	?JMAP("story", ?JOB_story);
+	?JMAP("original story", ?JOB_original_story);
+	?JMAP("short story", ?JOB_short_story);
+	?JMAP("poem", ?JOB_poem);
+	?JMAP("poems", ?JOB_poems);
+	?JMAP("memoirs", ?JOB_memoirs);
+	?JMAP("play", ?JOB_play);
+	?JMAP("plays", ?JOB_plays);
+	?JMAP("tale", ?JOB_tale);
+	?JMAP("opera", ?JOB_opera);
+	?JMAP("titles", ?JOB_titles);
+	?JMAP("teleplay", ?JOB_teleplay);
+	?JMAP("teleplay by", ?JOB_teleplay);
+	?JMAP("idea", ?JOB_idea);
+	?JMAP("dialogue", ?JOB_dialogue);
+	?JMAP("commentary", ?JOB_commentary);
+	?JMAP("screenplay", ?JOB_screen_play);
+	?JMAP("screen play", ?JOB_screen_play);
+	?JMAP("screen play by", ?JOB_screen_play);
+	?JMAP("screenplay by", ?JOB_screen_play);
+
+	?JMAP("original screenplay", ?JOB_original_screen_play);
+	?JMAP("comic strip", ?JOB_comic_strip);
+	?JMAP("comedy", ?JOB_comedy);
+	?JMAP("scenario", ?JOB_scenario);
+	?JMAP("novella", ?JOB_novella);
+	?JMAP("adaptation", ?JOB_adaptation);
+	?JMAP("book", ?JOB_book);
+	?JMAP("fable", ?JOB_fable);
+	?JMAP("translation", ?JOB_translation);
+
+	?JMAP("main characters", ?JOB_main_characters);
+	?JMAP("based on a play by", ?JOB_based_on_a_play_by);
+	?JMAP("based on the play by", ?JOB_based_on_a_play_by);
+	?JMAP("based on a story by", ?JOB_based_on_a_story_by);
 	?JMAP("based on a characters created by",
-	     #job.based_on_characters_by);
-	?JMAP("based on a novel by", #job.based_on_a_novel_by);
-	?JMAP("from a story by", #job.based_on_a_story_by);
-	?JMAP("adapted from the play by", #job.adapted_from_the_play_by);
-	?JMAP("written by", #job.written_by);
-	?JMAP("contributing writer", #job.contributing_writer);
-	?JMAP("staff writer", #job.staff_writer);
-	?JMAP("unused screenplay", #job.unused_screenplay);
-	?JMAP("quotation", #job.quotation);
-	?JMAP("manuscript", #job.manuscript);
-	?JMAP("unfinished novel", #job.unfinished_novel);
-	?JMAP("unconfirmed", #job.unconfirmed);
-	?JMAP("libretto", #job.libertto);
-	?JMAP("photoplay", #job.photoplay);
-	?JMAP("by", #job.by);
-	?JMAP("video editor", #job.video_editor);
-	?JMAP("opera libretto", #job.opera_libretto);
-	?JMAP2("adaptation and scenario", #job.adaptation, #job.scenario);
+	     ?JOB_based_on_characters_by);
+	?JMAP("based on a novel by", ?JOB_based_on_a_novel_by);
+	?JMAP("from a story by", ?JOB_based_on_a_story_by);
+	?JMAP("adapted from the play by", ?JOB_adapted_from_the_play_by);
+	?JMAP("written by", ?JOB_written_by);
+	?JMAP("contributing writer", ?JOB_contributing_writer);
+	?JMAP("staff writer", ?JOB_staff_writer);
+
+	?JMAP("unused screenplay", ?JOB_unused_screenplay);
+	?JMAP("quotation", ?JOB_quotation);
+	?JMAP("stories", ?JOB_stories);
+	?JMAP("manuscript", ?JOB_manuscript);
+	?JMAP("unfinished novel", ?JOB_unfinished_novel);
+	?JMAP("unconfirmed", ?JOB_unconfirmed);
+	?JMAP("libretto", ?JOB_libertto);
+	?JMAP("photoplay", ?JOB_photoplay);
+	?JMAP("by", ?JOB_by);
+
+	?JMAP("after", ?JOB_after);
+	?JMAP("video editor", ?JOB_video_editor);
+	?JMAP("opera libretto", ?JOB_opera_libretto);
+	?JMAP("adapted from his novel", ?JOB_adapted_from_his_novel);
+
+        %% and combined
+	?JMAP_AND("adaptation and scenario",
+		  ?JOB_adaptation, ?JOB_scenario);
+	?JMAP_AND("original story and screen play",
+		  ?JOB_original_story, ?JOB_screen_play);
 	%% one argument blank mark continuation
-	?JMAPA("story", #job.story);
-	?JMAPA("short story", #job.short_story);
-	?JMAPA("play", #job.play);
-	?JMAPA("poem", #job.poem);
-	?JMAPA("comic strip", #job.comic_strip);
-	?JMAPA("novel", #job.novel);
-	?JMAPA("novels", #job.novels);
-	?JMAPA("stories", #job.stories);
-	?JMAPA("operetta", #job.operetta);
-	?JMAPA("opera", #job.opera);
-	?JMAPA("book", #job.book);
-	?JMAPA("character", #job.character);
-	?JMAPA("after", #job.'after');
-	?JMAPA("poems", #job.poems);
-	?JMAPA("adapted from his novel:", #job.adapted_from_his_novel);
-	(Any) -> <<$\s,Any/binary>>
+	?JMAPA("story", ?JOB_story);
+	?JMAPA("short story", ?JOB_short_story);
+	?JMAPA("play", ?JOB_play);
+	?JMAPA("poem", ?JOB_poem);
+	?JMAPA("comic strip", ?JOB_comic_strip);
+	?JMAPA("novel", ?JOB_novel);
+	?JMAPA("novels", ?JOB_novels);
+	?JMAPA("stories", ?JOB_stories);
+	?JMAPA("operetta", ?JOB_operetta);
+	?JMAPA("opera", ?JOB_opera);
+	?JMAPA("book", ?JOB_book);
+	?JMAPA("character", ?JOB_character);
+	?JMAPA("after", ?JOB_after);
+	?JMAPA("poems", ?JOB_poems);
+	?JMAPA("adapted from his novel:", ?JOB_adapted_from_his_novel)
        ).
 
--define(CMAP(K,V), <<K>> => V).
--define(CATEGORY_MAP, #{ ?CATEGORY_LIST }).
+-define(JMAP(String,C1),	(<<String>>) -> <<(C1)>>).
+-define(JMAP_AND(String,C1,C2),	(<<String>>) -> <<(C1),(C2)>>).
+-define(JMAPA(String,C1), 
+	(<<String" ",Arg/binary>>) -> <<(C1),$\~,Arg/binary>>).
+job_map(Value) ->
+    case Value of
+	?JOB_LIST;
+	(Any) -> <<$\~,Any/binary>>
+    end.
+-undef(JMAP).
+-undef(JMAP_AND).
+-undef(JMAPA).
 
--define(JMAP(String,C1),
-	(<<String>>) -> <<((C1)+$A)>>).
--define(JMAP2(String,C1,C2),
-	(<<String>>) -> <<((C1)+$A),((C2)+$A)>>).
--define(JMAPA(String,C1),
-	(<<String" ",Arg/binary>>) -> <<((C1)+$A),$\s,Arg/binary>>).
+-define(JMAP(String,C1),        C1 -> <<String>>).
+-define(JMAP_AND(String,C1,C2), 0 -> <<>>).
+-define(JMAPA(String,C1),       C1 -> <<String>>).
 
--define(JOB_MAP, fun ?JOB_LIST end).
+job_lookup(C) ->
+    case C of
+	?JOB_LIST;
+	_ -> error({C, not_a_job})
+    end.
 
+job_revmap(Value) ->
+    case Value of
+	<<$\~,Arg/binary>> -> Arg;
+	<<C1,$\~,Arg/binary>> ->
+	    S1 = job_lookup(C1),
+	    <<S1/binary," ",Arg/binary>>;
+	<<C1,C2>> ->
+	    S1 = job_lookup(C1),
+	    S2 = job_lookup(C2),
+	    <<S1/binary," and ",S2/binary>>;
+	<<C1>> ->
+	    job_lookup(C1);
+	<<>> ->
+	    <<>>
+    end.
+    
 -define(TSV_FIELD(Name,Type,Default),
 	#tsv_field{name=(<<Name>>),type=(Type),default=(Default)}).
 -define(TSV_FIELD(Name,Type,Parser,Default),
 	#tsv_field{name=(<<Name>>),type=(Type),parser=(Parser),
+		   default=(Default)}).
+-define(TSV_FIELD(Name,Type,Parser,Formatter,Default),
+	#tsv_field{name=(<<Name>>),type=(Type),parser=(Parser),
+		   formatter=(Formatter),
 		   default=(Default)}).
 	
 %% Table attributes and settings
@@ -250,9 +302,10 @@ title_principals(table) ->
 	   [?TSV_FIELD("tconst",?TCONST,[]),
 	    ?TSV_FIELD("ordering",?INT8,[]),
 	    ?TSV_FIELD("nconst",?NCONST,[]),
-	    ?TSV_FIELD("category",?CATEGORY, ?CATEGORY_MAP, 0),
-	    ?TSV_FIELD("job", ?JOB, ?JOB_MAP, <<>>),
-	    ?TSV_FIELD("characters", ?ARRAY(?STRING),[])]
+	    ?TSV_FIELD("category",?CATEGORY, fun category_map/1, 
+		       fun category_revmap/1, 0),
+	    ?TSV_FIELD("job", ?JOB, fun job_map/1, <<>>),
+	    ?TSV_FIELD("characters", ?ARRAY(?STRING),{})]
       };
 title_principals(tsv_file) ->
     filename:join(code:priv_dir(movi), "title.principals.tsv.gz");
@@ -394,20 +447,67 @@ primary_key(Rec, Table) ->
 	[I,J] -> {element(I,Rec),element(J,Rec)}
     end.
 
-import_tsv_all() ->
+export_tsv_file(Name) ->
+    export_tsv_file(-1,Name).
+
+export_tsv_file(MaxRecords,Name) ->
+    Table = ?MODULE:Name(table),
+    DbFile = ?MODULE:Name(db_file),
+    Fields = Table#tsv_table.fields,
+    Names = [N || #tsv_field{name=N} <- Fields],
+    case tsvdb:open_rec(DbFile, read) of
+	{ok,Fd} ->
+	    case tsv:open(DbFile, write) of
+		{ok,Fd1} ->
+		    tsv:write(Fd1, Names),
+		    try export_tsv_records(MaxRecords,Fd,Fd1,Table) of
+			ok -> ok
+		    catch
+			error:Reason:Stack ->
+			    io:format("export_tsv_records crash\n~p\n", 
+				      [Stack]),
+			    {error,Reason}
+		    after
+			tsv:close(Fd1),
+			tsvdb:close(Fd)
+		    end;
+		Error ->
+		    tsvdb:close(Fd),
+		    Error
+	    end;
+	Error -> Error
+    end.
+
+export_tsv_records(0, _Fd, _Fd1, _Table) ->
+    ok;
+export_tsv_records(I, Fd, Fd1, Table) ->
+    case tsvdb:read_record(Fd, Table) of
+	{ok,Record} ->
+	    Fs = tsv:format_record(Record, Table#tsv_table.fields),
+	    tsv:write(Fd1, Fs),
+	    export_tsv_records(I-1,Fd, Fd1, Table);
+	Error = {error,_} ->
+	    Error;
+	eof ->
+	    ok
+    end.
+
+import_all() ->
     import_tsv_file(name_basics, false),
     import_tsv_file(title_basics, false),
     import_tsv_file(title_episode, false),
     import_tsv_file(title_crew, false),
     import_tsv_file(title_ratings, true),
     import_tsv_file(title_principals, false),
-    import_tsv_file(title_akas, false),
+    import_tsv_file(title_akas, false).
+
+import_local_all() ->
     import_tsv_file(user, true),
     import_tsv_file(group, true).
 
-
-export(_Name) ->
-    %% should write ets/dets to a tsv file!
+%% read rec files and produce tsv files
+export_all() ->
+    export_tsv_file(title_ratings),
     ok.
 
 %% setup ets/dets tables

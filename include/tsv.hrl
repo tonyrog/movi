@@ -71,7 +71,8 @@
 	 name :: binary(),
 	 type :: uint32(),   %% :uint32  ?TSV_TYPE_xxxx
 	 default :: term(),  %% default value to encode (when undefined)
-	 parser  :: map() | function(),  %% value parser
+	 parser    :: map() | function(),  %% value parser
+	 formatter :: map() | function(),  %% value formatter
 	 index_type :: uint32(),     %% ?TSV_INDEX_xxxx
 	 index_offset :: uint64()    %%
 	}).
