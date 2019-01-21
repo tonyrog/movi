@@ -1,5 +1,5 @@
 *.gz
-*.dat
-*.dets
+*.rec
+*.pri
 *.tsv
-bdb
+

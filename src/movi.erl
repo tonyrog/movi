@@ -15,6 +15,7 @@
 -include("../include/imdb.hrl").
 
 start() ->
+    imdb:check_db_home(),
     application:start(movi),
     load().
 
